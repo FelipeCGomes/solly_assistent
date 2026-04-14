@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "216643583802",
+    "project_id": "solly-assistent",
+    "storage_bucket": "solly-assistent.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:216643583802:android:917292be862281d6c05a03",
+        "android_client_info": {
+          "package_name": "com.example.solly"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "216643583802-vpeubh9oeg1lr8jnt6naso8hmusphiot.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.solly",
+            "certificate_hash": "0ed391035a217303991ec3e75033678e9fe64fd2"
+          }
+        },
+        {
+          "client_id": "216643583802-i49g2ie0itvvjp7l0i32kr6dm3su3sqs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGk0nSMkZ5-L9FUyHd2h9neO7McdChy0Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "216643583802-i49g2ie0itvvjp7l0i32kr6dm3su3sqs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
