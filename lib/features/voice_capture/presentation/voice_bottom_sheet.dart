@@ -9,78 +9,52 @@ class VoiceBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Começa a ouvir automaticamente assim que a tela abre
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.startListening();
-    });
-
     return Container(
       padding: const EdgeInsets.all(24),
+      height: 350,
       decoration: BoxDecoration(
         color: context.theme.colorScheme.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            spreadRadius: 5,
+          )
+        ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min, // Ocupa só o espaço necessário
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 24),
+          Obx(() => Container(
+            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(10),
+              color: controller.isListening.value 
+                  ? context.theme.colorScheme.primary.withOpacity(0.1) 
+                  : Colors.grey[100],
+              shape: BoxShape.circle,
             ),
-          ),
-
-          // O Texto Mágico
-          Obx(
-            () => Text(
-              controller.textoReconhecido.value,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+            child: Icon(
+              controller.isListening.value ? Icons.mic : Icons.mic_none,
+              size: 64,
+              color: controller.isListening.value 
+                  ? context.theme.colorScheme.primary 
+                  : Colors.grey,
             ),
-          ),
-
-          const SizedBox(height: 40),
-
-          // Botão animado (Simples com o GetX)
-          Obx(
-            () => GestureDetector(
-              onTap: () {
-                if (controller.isListening.value) {
-                  controller.stopListening();
-                } else {
-                  controller.startListening();
-                }
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: controller.isListening.value ? 90 : 70,
-                height: controller.isListening.value ? 90 : 70,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: controller.isListening.value
-                      ? Colors.redAccent.withOpacity(0.2)
-                      : context.theme.colorScheme.primary.withOpacity(0.1),
-                ),
-                child: Center(
-                  child: Icon(
-                    controller.isListening.value ? Icons.mic : Icons.mic_none,
-                    size: 40,
-                    color: controller.isListening.value
-                        ? Colors.redAccent
-                        : context.theme.colorScheme.primary,
-                  ),
-                ),
-              ),
+          )),
+          const SizedBox(height: 32),
+          Obx(() => Text(
+            controller.textoReconhecido.value,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              // Muda a cor se for a Solly falando
+              color: controller.textoReconhecido.value.startsWith("Solly:") 
+                  ? context.theme.colorScheme.primary 
+                  : Colors.black87,
             ),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Fale "Gastei 20 reais" ou "Tive uma ideia"',
-            style: TextStyle(color: Colors.grey),
-          ),
+          )),
         ],
       ),
     );

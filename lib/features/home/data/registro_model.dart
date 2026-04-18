@@ -3,10 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class RegistroModel {
   final String id;
   final String texto;
-  final String tipo; 
-  final double? valor; 
+  final String tipo;
+  final double? valor;
   final DateTime data;
-  final bool reagendado; // 🔥 Novo recurso
+  final bool reagendado;
+  final String? descricao; // 🔥 Novo campo
+  final bool notificar5Min; // 🔥 Novo campo
 
   RegistroModel({
     required this.id,
@@ -15,10 +17,11 @@ class RegistroModel {
     this.valor,
     required this.data,
     this.reagendado = false,
+    this.descricao,
+    this.notificar5Min = false,
   });
 
   factory RegistroModel.fromJson(Map<String, dynamic> json, String id) {
-    // 🔥 Puxa a data do agendamento primeiro. Se não tiver, puxa a de criação.
     final Timestamp? dataAgendada = json['dataAgendada'] as Timestamp?;
     final Timestamp? createdAt = json['createdAt'] as Timestamp?;
     
@@ -28,7 +31,9 @@ class RegistroModel {
       tipo: json['tipo'] ?? 'outro',
       valor: json['valor']?.toDouble(),
       data: (dataAgendada ?? createdAt ?? Timestamp.now()).toDate(),
-      reagendado: json['reagendado'] ?? false, 
+      reagendado: json['reagendado'] ?? false,
+      descricao: json['descricao'], // Lê do Firebase
+      notificar5Min: json['notificar5Min'] ?? false, // Lê do Firebase
     );
   }
 }

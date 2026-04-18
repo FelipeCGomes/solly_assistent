@@ -8,54 +8,48 @@ class NotificationService {
   static Future<void> init() async {
     tz.initializeTimeZones();
 
-    // Configuração do ícone para Android
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const ios = DarwinInitializationSettings();
 
-    // A classe agora se chama Darwin...
-    const darwin = DarwinInitializationSettings();
+    const initSettings = InitializationSettings(
+      android: android,
+      iOS: ios,
+    );
 
+    // 🔥 CORREÇÃO 1: Usando "settings:" de forma estritamente nomeada (0 argumentos posicionais)
     await _notifications.initialize(
-      settings: const InitializationSettings(
-        android: android,
-        iOS:
-            darwin, // 🔥 A CORREÇÃO ESTÁ AQUI: O parâmetro continua sendo 'iOS'
-      ),
+      settings: initSettings,
     );
   }
 
-  static Future<void> agendarLembrete(String titulo, DateTime data) async {
-    // 1. Notificação 15 minutos antes
-    final data15Min = data.subtract(const Duration(minutes: 15));
-    if (data15Min.isAfter(DateTime.now())) {
-      await _agendar(
-        id: titulo.hashCode, // Gera um ID único baseado no texto
-        titulo: 'Solly: Lembrete em 15min',
-        corpo: titulo,
-        data: data15Min,
-      );
-    }
-
-    // 2. Notificação no dia pela manhã (08:00)
+  static Future<void> agendarLembrete(String titulo, DateTime data, {String? descricao, bool notificar5Min = false}) async {
+    // 1. Notificação no dia pela manhã (08:00)
     final dataManha = DateTime(data.year, data.month, data.day, 8, 0);
     if (dataManha.isAfter(DateTime.now())) {
       await _agendar(
-        id:
-            titulo.hashCode +
-            1, // ID diferente para não sobrescrever a de 15min
-        titulo: 'Solly: Você tem um compromisso hoje',
-        corpo: titulo,
-        data: dataManha,
+        titulo.hashCode + 1,
+        'Solly: Compromisso Hoje',
+        titulo,
+        dataManha,
       );
+    }
+
+    // 2. Notificação de 5 Minutos antes
+    if (notificar5Min) {
+      final data5Min = data.subtract(const Duration(minutes: 5));
+      if (data5Min.isAfter(DateTime.now())) {
+        await _agendar(
+          titulo.hashCode + 2,
+          'Começa em 5 minutos! ⏰',
+          titulo,
+          data5Min,
+        );
+      }
     }
   }
 
-  static Future<void> _agendar({
-    required int id,
-    required String titulo,
-    required String corpo,
-    required DateTime data,
-  }) async {
-    // Agora o zonedSchedule usa apenas parâmetros nomeados
+  static Future<void> _agendar(int id, String titulo, String corpo, DateTime data) async {
+    // 🔥 CORREÇÃO 2: Passando rigorosamente os nomes (id:, title:, body:, scheduledDate:)
     await _notifications.zonedSchedule(
       id: id,
       title: titulo,
@@ -63,15 +57,14 @@ class NotificationService {
       scheduledDate: tz.TZDateTime.from(data, tz.local),
       notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
-          'solly_reminders', // ID do canal
-          'Lembretes Solly', // Nome do canal
+          'solly_reminders',
+          'Lembretes Solly',
           importance: Importance.max,
-          priority: Priority
-              .high, // Adicionado para garantir que o aviso apareça no topo
+          priority: Priority.high,
         ),
+        iOS: DarwinNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      // O uiLocalNotificationDateInterpretation foi removido do pacote
     );
   }
 }
